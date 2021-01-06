@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.best.reader.pdfconverter.joypdf",
+  "variantName": "processReleaseResources",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "versionCode": 5,
+      "versionName": "0.0.5",
+      "outputFile": "JoyPDF_v0.0.5_release.apk"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "839404108557",
+    "project_id": "joy-pdf",
+    "storage_bucket": "joy-pdf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839404108557:android:4ed6e30cdcb53b82310e44",
+        "android_client_info": {
+          "package_name": "com.best.reader.pdfconverter.joypdf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "839404108557-bilh12g13atb298ke87h6ml91tklvlom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsglA9E9oznw33Tzz0dBjFHgZKZK-1RI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "839404108557-bilh12g13atb298ke87h6ml91tklvlom.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

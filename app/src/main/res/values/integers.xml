@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="tab_titles">
+        <item>Home</item>
+        <item>Library</item>
+        <item>Me</item>
+    </array>
+
+    <array name="tab_drawable">
+        <item>@drawable/tab_home_selector</item>
+        <item>@drawable/tab_library_selector</item>
+        <item>@drawable/tab_mine_selector</item>
+    </array>
+</resources>

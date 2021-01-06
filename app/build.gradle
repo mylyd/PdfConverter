@@ -1,0 +1,107 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.best.reader.pdfconverter.joypdf"
+        minSdkVersion 19
+        targetSdkVersion 30
+        versionCode 5
+        versionName "0.0.5"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Specifies the ABI configurations of your native
+        // libraries Gradle should build and package with your APK.
+        //ndk.abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+        //支持x32情况下，google play发布会因为不兼容文件导致发布条件不符，无法发布，所以不能设置x32 so库的兼容模式
+    }
+
+    signingConfigs {
+        release {
+            keyAlias KEY_ALIAS
+            keyPassword PASSWORD
+            storeFile file(STORE_FILE)
+            storePassword PASSWORD
+        }
+
+        debug {
+            keyAlias KEY_ALIAS
+            keyPassword PASSWORD
+            storeFile file(STORE_FILE)
+            storePassword PASSWORD
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (outputFileName != null) {
+                outputFileName = outputFileName.replace("app-", "")
+                        .replace("release", "JoyPDF_v${versionName}_release")
+                        .replace("debug", "JoyPDF_v${versionName}_debug")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // 屏蔽 task (crashlyticsUploadDeobsRelease)
+    gradle.taskGraph.whenReady {
+        tasks.each { task ->
+            if (task.name.contains("crashlyticsUpload")) {
+                task.enabled = false
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility "1.8"
+        targetCompatibility "1.8"
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation project(':imageselector')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'com.facebook.android:facebook-android-sdk:6.2.0'
+    implementation 'com.facebook.android:audience-network-sdk:6.2.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-analytics:17.6.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.9.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+}

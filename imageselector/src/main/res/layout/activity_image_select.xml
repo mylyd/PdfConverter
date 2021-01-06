@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action_bar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <RelativeLayout
+        android:id="@+id/rl_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/theme_color"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/btn_back_selector">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="22dp"
+                android:paddingRight="22dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_back" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btn_folder_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingRight="5dp"
+            android:layout_toRightOf="@+id/btn_back">
+
+            <TextView
+                android:id="@+id/tv_folder_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/selector_all_image"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="12dp"
+                android:textColor="@android:color/black"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/text_indicator"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:foreground="@drawable/btn_foreground_selector">
+
+            <TextView
+                android:id="@+id/tv_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:background="@drawable/btn_green_shape"
+                android:gravity="center"
+                android:minWidth="50dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/selector_complete"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:background="@color/bg_color"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:overScrollMode="never"
+        android:layout_marginBottom="48dp"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:background="#9e111212"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/masking"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/rv_image"
+        android:layout_alignTop="@+id/rv_image"
+        android:background="#c4111212"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_folder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="150dp"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:overScrollMode="never"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginBottom="48dp"
+        android:scrollbars="vertical"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="@color/theme_color">
+
+        <FrameLayout
+            android:id="@+id/btn_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:foreground="@drawable/btn_foreground_selector">
+
+            <TextView
+                android:id="@+id/tv_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:minWidth="70dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/selector_preview"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</FrameLayout>

@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">Joy PDF</string>
+
+    <string name="privacy_url">https://sites.google.com/view/joypdf</string>
+    <string name="feed_back">https://docs.google.com/forms/d/e/1FAIpQLSfjWQGuVmCf9wNoCKCG2Cy_hiAbn0LLU4T9GJb2GkUxF3yXig/viewform</string>
+    <string name="share_app_content">Hey! I\'m using Joy PDF, come and join us! https://play.google.com/store/apps/details?id=com.best.reader.pdfconverter.joypdf</string>
+
+    <!--ads-->
+    <string name="app_admob_id"> </string>
+    <string name="app_facebook_id">3495947463864245</string>
+
+    <!--home-->
+    <string name="home_form_pdf">Convert from PDF</string>
+    <string name="home_to_pdf">Convert to PDF</string>
+    <string name="home_document">Document Operation</string>
+    <string name="pdf_to_word">PDF to Word</string>
+    <string name="pdf_to_img">PDF to Image</string>
+    <string name="img_to_pdf">Image to PDF</string>
+    <string name="word_to_pdf">Word to PDF</string>
+    <string name="file_reading">File reading</string>
+    <string name="img_to_pdf_prompt">Tap to preview and edit.Long press to sort the images.</string>
+    <string name="add_image">Add Image</string>
+
+    <!--library-->
+    <string name="lib_file_reading">File Reading</string>
+    <string name="lib_all_files">All Files</string>
+    <string name="lib_pdf">PDF</string>
+    <string name="lib_word">Word</string>
+    <string name="lib_zip">Zip</string>
+    <string name="lib_no_document">No related documents</string>
+    <string name="lib_delete_file_content">Confirm to delete the selected file?</string>
+
+    <!--mine-->
+    <string name="mine_faq">FAQ</string>
+    <string name="mine_privacy">Privacy Policy</string>
+    <string name="mine_feedback">Feedback</string>
+    <string name="mine_share">Share app</string>
+    <string name="faq_title_1">Do you keep a copy of my processed files?</string>
+    <string name="faq_content_1">Absolutely not. Your files are only yours. While your files are in our servers, they are strictly secured and no one can access them. We just keep them for a maximum of 2 hours so you can download them. Right after, they are completely removed forever from our servers.</string>
+    <string name="faq_title_2">Are company files safe with your service?</string>
+    <string name="faq_content_2">Yes. All uploads use https/SSL and include our end-to-end encryption for further privacy. These additional steps increase security and satisfy most corporate data privacy policies. Put simply, your data is processed as safely as possible.</string>
+    <string name="faq_title_3">Why does my conversion take so long?</string>
+    <string name="faq_content_3">Unfortunately, this is not entirely in our hands. Processing speed depends on many factors, so the time that will take you to get your files converted will depend as well on your own Internet connection speed, the size of the selected files and, mostly, on how busy our servers are.</string>
+
+    <!--unloading-->
+    <string name="file_converting">File converting</string>
+    <string name="file_converting_">File converting…</string>
+    <string name="file_upload_failed">File upload failed</string>
+    <string name="successful_conversion">Successful Conversion</string>
+
+    <!--dialog-->
+    <string name="delete_content">Are you sure to delete the current picture?</string>
+    <string name="cancel_content">The file is being converted.Confirm to cancel?</string>
+    <string name="toast_no_net">No network connection. Documents cannot be converted.</string>
+
+    <!--public-->
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+    <string name="preview">Preview</string>
+    <string name="preview_pdf">Preview PDF</string>
+    <string name="preview_img">Preview Image</string>
+    <string name="preview_word">Preview Word</string>
+    <string name="save_album">Save to Album</string>
+    <string name="library">Library</string>
+    <string name="share">Share</string>
+    <string name="ok">OK</string>
+    <string name="camera">Camera</string>
+    <string name="album">Album</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="select_document">Select Document</string>
+    <string name="mobile_directory">Mobile Directory</string>
+    <string name="damaged_file">Damaged file</string>
+    <string name="save_success">Save success</string>
+    <string name="save_fail">Save fail</string>
+    <string name="start_network">Please check your internet connection is good!</string>
+    <string name="init_tbs">The preview module component is loading, please wait…</string>
+    <string name="file_size_exceed">This task is limited to 10MB. Please select another document。</string>
+
+</resources>
