@@ -1,28 +1,18 @@
 package com.pdf.converter.activity
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.donkingliang.imageselector.ExtraCropActivity
-import com.donkingliang.imageselector.toast.MToast
 import com.donkingliang.imageselector.utils.ImageSelector
 import com.donkingliang.imageselector.utils.ImageSelector.EXTRA_CROP
+import com.donkingliang.imageselector.utils.ImageSelector.PRIMITIVE_CROP
 import com.donkingliang.imageselector.utils.ImageUtil
-import com.pdf.converter.MyApp
 import com.pdf.converter.R
 import com.pdf.converter.adapter.ImageSelectorAdapter
 import com.pdf.converter.aide.Constants.REQUEST_CODE
@@ -42,7 +32,7 @@ import com.pdf.converter.utils.Utils
 import com.pdf.converter.view.GridWallpaperDecoration
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
+
 
 /**
  * @author : ydli
@@ -70,7 +60,6 @@ class ImageToPDFActivity : BaseActivity() {
         recyclerView?.adapter = imgAdapter
         ItemTouchHelpers(this, imgAdapter!!).attachToRecyclerView(recyclerView)
         initDeleteDialog()
-        initAddDialog()
     }
 
     override fun initData() {
@@ -94,12 +83,17 @@ class ImageToPDFActivity : BaseActivity() {
             override fun item(position: Int, string: String?) {
                 if (string == null) {
                     track(MyTrack.imagetopdf_add_image_click)
-                    if (selectorDialog != null && !selectorDialog?.isShowing!!) {
-                        selectorDialog?.show()
-                    }
+                    initAddDialog()
                 } else {
                     track(MyTrack.imagetopdf_edit_page_show)
-                    ExtraCropActivity.openActivity(this@ImageToPDFActivity, position, string)
+
+                    //使用固定切图模式
+                    ExtraCropActivity.openActivity(
+                        this@ImageToPDFActivity,
+                        PRIMITIVE_CROP,
+                        position,
+                        string
+                    )
                 }
             }
 
@@ -163,14 +157,16 @@ class ImageToPDFActivity : BaseActivity() {
                 convert?.visibility = View.VISIBLE
             }
         } else {
-            //onBackPressed()
+            if (selectorDialog == null){
+                onBackPressed()
+            }
         }
     }
 
     private fun initDeleteDialog() {
         if (deleteDialog == null) {
             deleteDialog = DeleteDialog(this, object : OnDeleteClick {
-                override fun ok(position: Int) {
+                override fun ok(position: Int, filePath: File?) {
                     if (position == -1) return
                     imgAdapter?.delete(position)
                     if (imgAdapter?.getPaths()!!.isEmpty() && convert?.visibility == View.VISIBLE) {
@@ -204,6 +200,9 @@ class ImageToPDFActivity : BaseActivity() {
                     isSelector = true
                 }
             })
+            selectorDialog?.show()
+        } else if (!selectorDialog?.isShowing!!) {
+            selectorDialog?.show()
         }
     }
 

@@ -11,7 +11,8 @@ import rx.Observable
 
 interface Request {
     companion object {
-        const val HOST = "https://snbmvc.jkhench.com/task/api/"
+        //const val HOST = "https://snbmvc.jkhench.com/task/api/"
+        const val HOST = "https://www.mobopdf.com/task/api/"
     }
 
     @Headers(Type.cookie)

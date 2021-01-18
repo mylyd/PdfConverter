@@ -133,7 +133,7 @@ class SlideRecyclerView @JvmOverloads constructor(
                                 mScroller.startScroll(scrollX, 0, -scrollX, 0, abs(scrollX))
                             }
                             scrollX >= mMenuViewWidth / 2 -> {
-                                // 如果超过删除按钮一半，则打开
+                                // 如果超过按钮一半，则打开
                                 mScroller.startScroll(
                                     scrollX, 0, mMenuViewWidth - scrollX,
                                     0, abs(mMenuViewWidth - scrollX)
@@ -208,7 +208,7 @@ class SlideRecyclerView @JvmOverloads constructor(
     }
 
     fun isScrollView(status: Boolean) {
-        this.isScroll = isScroll
+        this.isScroll = status
     }
 
     /**
@@ -218,6 +218,13 @@ class SlideRecyclerView @JvmOverloads constructor(
     fun closeMenu() {
         if (mFlingView != null && mFlingView!!.scrollX != 0) {
             mFlingView!!.scrollTo(0, 0)
+        }
+    }
+
+    fun openMenu(){
+        if (mFlingView != null){
+            mScroller.startScroll(1, 0, mMenuViewWidth, 0)
+            mFlingView!!.scrollTo(mScroller.currX, mScroller.currY)
         }
     }
 

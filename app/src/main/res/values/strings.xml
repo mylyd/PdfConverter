@@ -67,6 +67,7 @@
     <string name="share">Share</string>
     <string name="ok">OK</string>
     <string name="camera">Camera</string>
+    <string name="converting">Converting</string>
     <string name="album">Album</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -75,8 +76,11 @@
     <string name="damaged_file">Damaged file</string>
     <string name="save_success">Save success</string>
     <string name="save_fail">Save fail</string>
+    <string name="rename_file">Rename File</string>
     <string name="start_network">Please check your internet connection is good!</string>
     <string name="init_tbs">The preview module component is loading, please wait…</string>
-    <string name="file_size_exceed">This task is limited to 10MB. Please select another document。</string>
+    <string name="file_size_exceed">This task is limited to 10MB. Please select another document.</string>
+
+    <string name="mime_type_pdf">application/pdf</string>
 
 </resources>

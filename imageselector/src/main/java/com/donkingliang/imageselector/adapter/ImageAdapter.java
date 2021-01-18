@@ -24,6 +24,11 @@ import com.donkingliang.imageselector.utils.VersionUtils;
 
 import java.util.ArrayList;
 
+/**
+ * @author : ydli
+ * @time : 2020/12/31 11:13
+ * @description :
+ */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private Context mContext;

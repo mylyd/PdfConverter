@@ -9,12 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.pdf.converter.R
-import com.pdf.converter.activity.PreviewWordAndPDFActivity
 import com.pdf.converter.aide.FirebaseTracker
 import com.pdf.converter.aide.MyTrack
 import com.pdf.converter.interfaces.OnFileItem
-import com.pdf.converter.utils.PathUtils
 import com.pdf.converter.manager.ShareManager
+import com.pdf.converter.utils.PathUtils
 import com.pdf.converter.utils.Utils
 import java.io.File
 
@@ -36,6 +35,24 @@ class FileLibraryAdapter(private val context: Context) :
             array.clear()
         }
         array.addAll(files)
+        array.sortByDescending { it.lastModified() }
+        notifyDataSetChanged()
+    }
+
+    fun refresh(position: Int, files: File) {
+        if (position < array.size) {
+            array[position] = files
+        }
+        array.sortByDescending { it.lastModified() }
+        notifyDataSetChanged()
+    }
+
+    fun getItemArray(): MutableList<File> = array
+
+    fun delete(position: Int) {
+        if (position < array.size) {
+            array.removeAt(position)
+        }
         array.sortByDescending { it.lastModified() }
         notifyDataSetChanged()
     }
@@ -65,6 +82,7 @@ class FileLibraryAdapter(private val context: Context) :
     inner class FileListView(view: View) : RecyclerView.ViewHolder(view) {
         private val imgType: ImageView = view.findViewById(R.id.item_type)
         private val share: ImageView = view.findViewById(R.id.item_share)
+        private val more: ImageView = view.findViewById(R.id.item_more)
         private val name: TextView = view.findViewById(R.id.item_name)
         private val info: TextView = view.findViewById(R.id.item_info)
         private val delete: TextView = view.findViewById(R.id.item_delete)
@@ -76,23 +94,30 @@ class FileLibraryAdapter(private val context: Context) :
             val file = array[position]
             if (!file.exists() || !file.isFile) return
             val fileType = file.name
-            if (noShare) share.visibility = View.VISIBLE else share.visibility = View.GONE
+            if (noShare) {
+                share.visibility = View.VISIBLE
+                more.visibility = View.VISIBLE
+            } else {
+                share.visibility = View.GONE
+                more.visibility = View.GONE
+            }
             share.setOnClickListener {
                 FirebaseTracker.instance.track(MyTrack.library_share_click)
                 ShareManager.toFileShare(context, file)
             }
+            more.setOnClickListener { onFileItem?.itemMore(position, file) }
             delete.setOnClickListener { onFileItem?.itemDelete(position, file) }
             rename.setOnClickListener { onFileItem?.itemRename(position, file) }
             itemView.setOnClickListener {
                 onFileItem?.itemAll(position)
                 when {
-                    fileType.contains(PathUtils.pdf) -> {
+                    fileType.endsWith(PathUtils.pdf) -> {
                         onFileItem?.itemPDF(file)
                     }
-                    fileType.contains(PathUtils.word) -> {
+                    fileType.endsWith(PathUtils.word) -> {
                         onFileItem?.itemWord(file)
                     }
-                    fileType.contains(PathUtils.zip) -> {
+                    fileType.endsWith(PathUtils.zip) -> {
                         onFileItem?.itemZip(file)
                     }
                 }
@@ -100,13 +125,13 @@ class FileLibraryAdapter(private val context: Context) :
             name.text = file.name
             info.text = "${Utils.getTimeFormat(file.lastModified())} ${PathUtils.getFileSize(file)}"
             when {
-                fileType.contains(PathUtils.pdf) -> {
+                fileType.endsWith(PathUtils.pdf) -> {
                     imgType.setImageResource(R.mipmap.mip_library_pdf)
                 }
-                fileType.contains(PathUtils.word) -> {
+                fileType.endsWith(PathUtils.word) || fileType.endsWith(PathUtils.wordx) -> {
                     imgType.setImageResource(R.mipmap.mip_library_word)
                 }
-                fileType.contains(PathUtils.zip) -> {
+                fileType.endsWith(PathUtils.zip) -> {
                     imgType.setImageResource(R.mipmap.mip_library_zip)
                 }
             }

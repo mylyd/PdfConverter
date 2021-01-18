@@ -24,6 +24,11 @@ import java.util.List;
 
 import androidx.core.content.ContextCompat;
 
+/**
+ * @author : ydli
+ * @time : 2020/12/31 11:13
+ * @description :
+ */
 public class ImageModel {
 
     /**

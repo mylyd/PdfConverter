@@ -42,6 +42,7 @@ class ItemTouchHelpers(
         if (fromPosition == data.size) return false
         //拿到当前拖拽(结束位置)的item的viewHolder
         val toPosition = target.adapterPosition
+        //因为最后一个列表不是图片资源是add选项，这里要做处理，避免指针越界
         if (toPosition == data.size) return false
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {

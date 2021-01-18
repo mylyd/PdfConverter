@@ -2,10 +2,9 @@ package com.pdf.converter.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.TextUtils
 import com.pdf.converter.R
 import java.io.File
 import java.io.FileInputStream
@@ -30,6 +29,7 @@ object PathUtils {
     private const val imageFile = "Conversion Files Img"
     const val zip = ".zip"
     const val word = ".doc"
+    const val wordx = ".docx"
     const val pdf = ".pdf"
     private const val time = "yyyyMMdd_HH:mm:ss_"
 
@@ -157,8 +157,8 @@ object PathUtils {
      * 重命名
      * 修改时，需要在外部进行源文件查询 并且进行文件后缀名的限定
      * @param file 修改文件
-     * @param newFileName 新名字
-     * @return
+     * @param newFileName 新名字(包含文件后缀名)
+     * @return null表示已存在相同的文件不可能rename
      * */
     fun fixFileName(file: File, newFileName: String): File? {
         val oldPath = file.parent
@@ -166,9 +166,10 @@ object PathUtils {
         if (newFile.exists()) {
             return null
         }
-        val status = copy(file, newFile.path)
+        val status = copy(file, newFile)
 
         return if (status) {
+            System.gc()
             file.delete()
             newFile
         } else null
@@ -199,6 +200,7 @@ object PathUtils {
             return newFileDir.path
         } else {
             copy(file, newFile)
+            System.gc()
             file.delete()
             return "$newFile${File.separator}${file.name}"
         }
@@ -298,12 +300,35 @@ object PathUtils {
     /**
      * 判断文件是否超过限定大小
      */
-    fun isFileExceed(file: File): Boolean {
-        val sizeFile = if (file.isDirectory) {
-            Utils.getFolderSize(file)
+    fun isFileExceed(file: File?): Boolean {
+        return if (file != null){
+            val sizeFile = if (file.isDirectory) {
+                Utils.getFolderSize(file)
+            } else {
+                file.length()
+            }
+            sizeFile <= 10485760f
         } else {
-            file.length()
+            false
         }
-        return sizeFile <= 10485760f
+    }
+
+    /***
+     * 获取文件类型
+     *
+     * @param paramString path
+     * @return
+     */
+    fun getFileType(paramString: String): String {
+        var str = ""
+        if (TextUtils.isEmpty(paramString)) {
+            return str
+        }
+        val i = paramString.lastIndexOf('.')
+        if (i <= -1) {
+            return str
+        }
+        str = paramString.substring(i + 1)
+        return str
     }
 }

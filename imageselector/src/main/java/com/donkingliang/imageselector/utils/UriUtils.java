@@ -21,6 +21,12 @@ import java.io.File;
  */
 public class UriUtils {
 
+    /**
+     * 通过Uri获取绝对路径
+     * @param context
+     * @param uri
+     * @return
+     */
     @SuppressLint("NewApi")
     public static String getPathForUri(Context context,Uri uri){
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;

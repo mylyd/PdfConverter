@@ -3,13 +3,11 @@ package com.pdf.converter.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
@@ -24,22 +22,21 @@ import com.pdf.converter.aide.Constants.UPLOAD_IMG_PDF
 import com.pdf.converter.aide.Constants.UPLOAD_PDF_IMG
 import com.pdf.converter.aide.Constants.UPLOAD_PDF_WORD
 import com.pdf.converter.aide.Constants.UPLOAD_WORD_PDF
-import com.pdf.converter.aide.Constants.success
 import com.pdf.converter.aide.Constants.download
 import com.pdf.converter.aide.Constants.fail
 import com.pdf.converter.aide.Constants.startDownload
-import com.pdf.converter.aide.Constants.unReading
+import com.pdf.converter.aide.Constants.success
 import com.pdf.converter.aide.MyTrack
 import com.pdf.converter.dialog.DeleteDialog
 import com.pdf.converter.interfaces.Conversion
 import com.pdf.converter.interfaces.OnDeleteClick
 import com.pdf.converter.interfaces.UploadingSuccess
 import com.pdf.converter.manager.ConversionManager
+import com.pdf.converter.manager.ShareManager
+import com.pdf.converter.manager.ShareManager.preViewOffice
+import com.pdf.converter.network.Type
 import com.pdf.converter.utils.ImageToPDF
 import com.pdf.converter.utils.PathUtils
-import com.pdf.converter.manager.ShareManager
-import com.pdf.converter.network.Type
-import com.pdf.converter.utils.PathUtils.zip
 import com.pdf.converter.utils.Utils
 import com.pdf.converter.utils.ZipUtils
 import java.io.File
@@ -68,16 +65,13 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
     private var selectorType: Int = -1
     private var paths: MutableList<String> = mutableListOf() //图片列表
     private var storageLocationPath: File? = null //转换成功后的文件
+    private var cancelShow: Boolean = false
 
     private fun initDeleteDialog() {
         if (deleteDialog == null) {
             deleteDialog = DeleteDialog(this, object : OnDeleteClick {
                 override fun cancel() {
-                    ConversionManager.instance.stop()
-                    onBackPressed()
-                }
-
-                override fun ok(position: Int) {
+                    //No
                     when (selectorType) {
                         UPLOAD_IMG_PDF -> track(MyTrack.imagetopdf_converting_cancel_yes_click)
                         UPLOAD_PDF_IMG -> track(MyTrack.pdf2jpg_converting_cancel_yes_click)
@@ -85,7 +79,16 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                         UPLOAD_PDF_WORD -> track(MyTrack.pdf2word_converting_cancel_yes_click)
                     }
                 }
+
+                override fun ok(position: Int, filePath: File?) {
+                    //Yes
+                    ConversionManager.instance.stop()
+                    finish()
+                }
             })
+            deleteDialog?.showCancel()
+        } else if (!deleteDialog?.isShowing!!) {
+            deleteDialog?.showCancel()
         }
     }
 
@@ -117,7 +120,6 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
         msgs = resources.getString(R.string.file_converting_)
         pathLayout?.visibility = View.GONE
         //name?.movementMethod = LinkMovementMethod.getInstance()//支持滚动
-        initDeleteDialog()
     }
 
     override fun initData() {
@@ -128,7 +130,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 track(MyTrack.pdfword_converting_page_show)
             }
         }
-        if (!Utils.isNetworkAvailable(this)) {
+        if (!Utils.isNetworkAvailable(this) && selectorType != UPLOAD_IMG_PDF) {
             MToast.instant()
                 .text(resources.getString(R.string.toast_no_net))
                 .duration(MToast.LONG)
@@ -160,7 +162,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                     UPLOAD_WORD_PDF -> track(MyTrack.word2pdf_converting_cancel_click)
                     UPLOAD_PDF_WORD -> track(MyTrack.pdf2word_converting_cancel_click)
                 }
-                if (deleteDialog != null && !deleteDialog?.isShowing!!) deleteDialog?.showCancel()
+                initDeleteDialog()
             }
             retry -> {
                 when (selectorType) {
@@ -169,11 +171,19 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                     UPLOAD_WORD_PDF -> track(MyTrack.word2pdf_convert_fail_retry_click)
                     UPLOAD_PDF_WORD -> track(MyTrack.pdf2word_convert_fail_retry_click)
                 }
-                retry?.visibility = View.GONE
-                cancel?.visibility = View.VISIBLE
-                loading?.text = msgs
-                loading?.setTextColor(resources.getColor(R.color.themes_color_blue))
-                conversion()
+                if (!Utils.isNetworkAvailable(this) && selectorType != UPLOAD_IMG_PDF) {
+                    MToast.instant()
+                        .text(resources.getString(R.string.toast_no_net))
+                        .duration(MToast.LONG)
+                        .icon(R.mipmap.mip_toast_no_net)
+                        .show()
+                } else {
+                    retry?.visibility = View.GONE
+                    cancel?.visibility = View.VISIBLE
+                    loading?.text = msgs
+                    loading?.setTextColor(resources.getColor(R.color.themes_color_blue))
+                    conversion()
+                }
             }
             preview -> {
                 when (selectorType) {
@@ -184,7 +194,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 }
                 when (selectorType) {
                     //img_pdf ,word_pdf ,pdf_word
-                    UPLOAD_IMG_PDF, UPLOAD_WORD_PDF, UPLOAD_PDF_WORD -> {
+                    UPLOAD_IMG_PDF, UPLOAD_WORD_PDF -> {
                         if (storageLocationPath == null) {
                             Toast.makeText(
                                 this,
@@ -193,10 +203,25 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                             ).show()
                         } else {
                             if (storageLocationPath?.exists()!! && storageLocationPath?.isFile!!) {
-                                PreviewWordAndPDFActivity.newStart(this, storageLocationPath!!.path)
+                                PreviewPDFActivity.newStart(this, path = storageLocationPath!!.path)
                             }
                         }
                     }
+
+                    UPLOAD_PDF_WORD -> {
+                        if (storageLocationPath == null) {
+                            Toast.makeText(
+                                this,
+                                resources.getString(R.string.damaged_file),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            if (storageLocationPath?.exists()!! && storageLocationPath?.isFile!!) {
+                                preViewOffice(this, storageLocationPath!!)
+                            }
+                        }
+                    }
+
                     //pdf_img
                     UPLOAD_PDF_IMG -> {
                         if (storageLocationPath == null) {
@@ -238,18 +263,25 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
         }
         ImageToPDF.toPDF(paths, storageLocationPath?.path!!,
             object : UploadingSuccess {
-                override fun success() = successView()
+                override fun success() {
+                    cancelShow = true
+                    successView()
+                }
 
-                override fun fail() = failView()
+                override fun fail() {
+                    cancelShow = true
+                    failView()
+                }
             })
     }
 
     private fun conversion(noType: Boolean? = false) {
+        cancelShow = false
         when (selectorType) {
             UPLOAD_IMG_PDF -> {
                 title?.text = resources.getString(R.string.img_to_pdf)
                 icon?.setImageResource(R.mipmap.mip_upload_img)
-                val pathsExtras = intent.extras?.get(UPLOADING_DATA) ?: onBackPressed()
+                val pathsExtras = intent.extras?.get(UPLOADING_DATA) ?: finish()
                 val pathValue = pathsExtras as MutableList<*>
                 for (i in pathValue.indices) {
                     paths.add(pathValue[i].toString())
@@ -260,7 +292,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 title?.text = resources.getString(R.string.word_to_pdf)
                 icon?.setImageResource(R.mipmap.mip_upload_word)
                 val filePath = intent.getStringExtra(UPLOADING_FILE)
-                if (filePath.isNullOrEmpty()) onBackPressed()
+                if (filePath.isNullOrEmpty()) finish()
                 val file = File(filePath!!)
                 name?.text = file.name
                 ConversionManager.instance
@@ -275,7 +307,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 title?.text = resources.getString(R.string.pdf_to_img)
                 icon?.setImageResource(R.mipmap.mip_upload_pdf)
                 val filePath = intent.getStringExtra(UPLOADING_FILE)
-                if (filePath.isNullOrEmpty()) onBackPressed()
+                if (filePath.isNullOrEmpty()) finish()
                 val file = File(filePath!!)
                 name?.text = file.name
                 ConversionManager.instance
@@ -290,7 +322,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 title?.text = resources.getString(R.string.pdf_to_word)
                 icon?.setImageResource(R.mipmap.mip_upload_pdf)
                 val filePath = intent.getStringExtra(UPLOADING_FILE)
-                if (filePath.isNullOrEmpty()) onBackPressed()
+                if (filePath.isNullOrEmpty()) finish()
                 val file = File(filePath!!)
                 name?.text = file.name
                 ConversionManager.instance
@@ -301,12 +333,13 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                     .status(conversionStatus)
                     .start()
             }
-            else -> if (noType!!) onBackPressed()
+            else -> if (noType!!) finish()
         }
     }
 
     private val conversionStatus = object : Conversion {
         override fun success(file: File) {
+            cancelShow = true
             Log.d("ConversionManager", "object success : ")
             val fileUnZip =
                 ZipUtils.unzip(file.path, PathUtils.unzipCache(this@UploadingActivity).path)
@@ -344,6 +377,7 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
         }
 
         override fun fail(throws: String) {
+            cancelShow = true
             Log.d("ConversionManager", "object fail : $throws")
             val msg = Message()
             msg.what = fail
@@ -394,6 +428,11 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
         loading?.setTextColor(resources.getColor(R.color.themes_color_red))
         cancel?.visibility = View.GONE
         retry?.visibility = View.VISIBLE
+        if (cancelShow) {
+            if (deleteDialog != null && deleteDialog?.isShowing!!) {
+                deleteDialog?.dismiss()
+            }
+        }
     }
 
     private fun successView() {
@@ -413,6 +452,11 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
         icon?.setImageResource(R.mipmap.mip_upload_success)
         size?.text = PathUtils.getFileSize(storageLocationPath!!)
         name?.text = storageLocationPath?.name
+        if (cancelShow) {
+            if (deleteDialog != null && deleteDialog?.isShowing!!) {
+                deleteDialog?.dismiss()
+            }
+        }
     }
 
     private fun progressView() {
@@ -444,7 +488,11 @@ class UploadingActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
-        super.onBackPressed()
+        if (!cancelShow) {
+            initDeleteDialog()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     companion object {

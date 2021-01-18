@@ -16,6 +16,8 @@ public class TrackLocalBroadcast {
     public static final int LIMITED_QUANTITY = 0x0000003;
     public static final int IMAGE_TO_PDF_COMPLETE = 0x0000004;
     public static final int IMAGE_TO_PDF_EDIT_COMPLETE = 0x0000005;
+    public static final int IMAGE_ROTATE = 0x0000006;
+    public static final int IMAGE_CROP = 0x0000007;
 
     public static void sendBroadcast(Context context, int Types) {
         Intent intent = new Intent(BROAD_ACTION);

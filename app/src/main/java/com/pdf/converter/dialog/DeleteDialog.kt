@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.pdf.converter.R
 import com.pdf.converter.interfaces.OnDeleteClick
+import java.io.File
 
 /**
  * @author : ydli
@@ -18,6 +19,7 @@ class DeleteDialog(activity: Activity, item: OnDeleteClick) :
     BaseDialog(activity, R.style.dialog_soft_input) {
     private var deleteClick: OnDeleteClick = item
     private var position: Int = -1
+    private var file: File? = null
     private var icon: ImageView? = null
     private var textContent: TextView? = null
     private var cancel: TextView? = null
@@ -38,21 +40,22 @@ class DeleteDialog(activity: Activity, item: OnDeleteClick) :
         }
         ok = findViewById(R.id.ok)
         ok?.setOnClickListener {
-            deleteClick.ok(position)
+            deleteClick.ok(position, file)
             dismiss()
         }
     }
 
-    fun show(position: Int) {
+    fun show(position: Int, file: File? = null) {
         this.position = position
+        this.file = file
         super.show()
     }
 
-    fun showCancel(){
+    fun showCancel() {
         super.show()
         icon?.visibility = View.GONE
         textContent?.text = textContent?.context?.getString(R.string.cancel_content)
-        cancel?.text = cancel?.context?.getString(R.string.yes)
-        ok?.text = ok?.context?.getString(R.string.no)
+        cancel?.text = cancel?.context?.getString(R.string.no)
+        ok?.text = ok?.context?.getString(R.string.yes)
     }
 }

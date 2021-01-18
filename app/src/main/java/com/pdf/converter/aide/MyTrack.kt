@@ -142,7 +142,7 @@ interface MyTrack {
         //图片预览页点击Save to Album按钮点击次数
         const val pdf2jpg_save2album_click = "pdf2jpg_save2album_click"
 
-        /* word -> pdf*/
+        /* word -> pdf */
         //文件点击次数
         const val word2pdf_file_click = "word2pdf_file_click"
 
@@ -265,5 +265,32 @@ interface MyTrack {
         //转换成功页面分享按钮点击次数
         const val imagetopdf_success_share_click = "imagetopdf_success_share_click"
 
+        //图片编辑页左转+右转按钮点击次数
+        const val imagetopdf_rotation_click = "imagetopdf_rotation_click"
+
+        //裁剪图标点击次数
+        const val imagetopdf_crop_click = "imagetopdf_crop_click"
+
+        //文件右侧功能按钮点击次数
+        const val library_more_click = "library_more_click"
+
+        //重命名按钮点击次数
+        const val library_rename_click = "library_rename_click"
+
+        //删除按钮点击次数
+        const val library_delete_click = "library_delete_click"
+
+        /*外部接口*/
+        //通过打开pdf文件接口跳转到pdf文件预览页的次数
+        const val open_pdf_file_api_click = "open_pdf_file_api_click"
+
+        //通过接口进入pdf文件预览页点击转换的次数
+        const val open_pdf_file_api_conver_click = "open_pdf_file_api_conver_click"
+
+        //通过接口进入pdf文件预览页点击pdf to word的次数
+        const val open_pdf_file_api_pdf2word_click = "open_pdf_file_api_pdf2word_click"
+
+        //通过接口进入pdf文件预览页点击pdf to image的次数
+        const val open_pdf_file_api_pdf2image_click = "open_pdf_file_api_pdf2image_click"
     }
 }

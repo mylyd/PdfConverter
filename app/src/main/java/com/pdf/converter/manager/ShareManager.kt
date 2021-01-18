@@ -7,6 +7,8 @@ import android.os.Build
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.pdf.converter.R
+import com.pdf.converter.aide.FirebaseTracker
+import com.pdf.converter.aide.MyTrack
 import java.io.File
 
 /**
@@ -59,6 +61,7 @@ object ShareManager {
      * @param file
      */
     fun toFileShare(context: Context, file: File?) {
+        if (file == null) return
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "*/*"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -92,6 +95,7 @@ object ShareManager {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            FirebaseTracker.instance.track(MyTrack.previewfile_file_show_fail)
             Toast.makeText(context, "No application found to open the file", Toast.LENGTH_SHORT).show()
         }
     }

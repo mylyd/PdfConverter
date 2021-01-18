@@ -7,8 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.util.Base64
 import java.io.File
-import java.text.DecimalFormat
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 
 /**
@@ -17,6 +19,30 @@ import java.text.SimpleDateFormat
  * @description :
  */
 object Utils {
+
+    /**
+     * 获取签名文件的哈希散列值
+     *
+     * @param context
+     * @return
+     */
+    fun getSignatureHasCode(context: Context): String? {
+        try {
+            val info = context.packageManager
+                .getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                //KeyHash 就是你要的，不用改任何代码  复制粘贴 ;
+                return Base64.encodeToString(md.digest(), Base64.DEFAULT)
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }
+        return null
+    }
 
     /**
      * @return 网络连接状态
@@ -91,9 +117,8 @@ object Utils {
     /**
      * 时间格式化
      */
-
     @SuppressLint("SimpleDateFormat")
-    fun getTimeFormat(long: Long, timeType: String? = "yyyy/MM/dd HH:mm"): String =
+    fun getTimeFormat(long: Long, timeType: String? = "MM/dd/yyyy HH:mm"): String =
         SimpleDateFormat(timeType).format(long)
 
     /**

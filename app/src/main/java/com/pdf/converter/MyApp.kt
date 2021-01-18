@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import androidx.multidex.MultiDexApplication
 import com.donkingliang.imageselector.toast.MToast
 import com.pdf.converter.aide.FirebaseTracker
-import com.pdf.converter.manager.FileManager
-import com.pdf.converter.manager.InitTBSManager
 
 /**
  * @author : ydli

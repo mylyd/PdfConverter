@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.donkingliang.imageselector.utils.ImageUtil
-import com.pdf.converter.MyApp
 import com.pdf.converter.R
 import com.pdf.converter.adapter.FileLibraryAdapter
 import com.pdf.converter.aide.Constants.QUERY_FILE
@@ -17,15 +16,17 @@ import com.pdf.converter.aide.Constants.UPLOAD_PDF_IMG
 import com.pdf.converter.aide.Constants.UPLOAD_PDF_WORD
 import com.pdf.converter.aide.Constants.UPLOAD_WORD_PDF
 import com.pdf.converter.aide.Constants.all
-import com.pdf.converter.aide.Constants.word
 import com.pdf.converter.aide.Constants.pdf
 import com.pdf.converter.aide.Constants.pdf_img
 import com.pdf.converter.aide.Constants.pdf_word
+import com.pdf.converter.aide.Constants.word
 import com.pdf.converter.aide.Constants.word_pdf
 import com.pdf.converter.aide.MyTrack
 import com.pdf.converter.interfaces.OnFileItem
 import com.pdf.converter.manager.FileManager
+import com.pdf.converter.manager.ShareManager.preViewOffice
 import com.pdf.converter.utils.PathUtils
+import com.pdf.converter.utils.Utils
 import java.io.File
 
 class QueryFileActivity : BaseActivity() {
@@ -86,6 +87,10 @@ class QueryFileActivity : BaseActivity() {
                 when (operating) {
                     word_pdf -> {
                         track(MyTrack.word2pdf_file_click)
+                        if (!Utils.isNetworkAvailable(this@QueryFileActivity)){
+                            Toast.makeText(this@QueryFileActivity, resources.getString(R.string.toast_no_net), Toast.LENGTH_SHORT).show()
+                            return
+                        }
                         if (isFileExceed(file)){
                             track(MyTrack.word2pdf_over10m_show)
                             Toast.makeText(this@QueryFileActivity,
@@ -101,7 +106,7 @@ class QueryFileActivity : BaseActivity() {
                     }
                     all -> {
                         track(MyTrack.previewfile_file_click)
-                        PreviewWordAndPDFActivity.newStart(this@QueryFileActivity, file.path)
+                        preViewOffice(this@QueryFileActivity, file)
                     }
                 }
             }
@@ -110,6 +115,10 @@ class QueryFileActivity : BaseActivity() {
                 when (operating) {
                     pdf_word -> {
                         track(MyTrack.pdf2word_file_click)
+                        if (!Utils.isNetworkAvailable(this@QueryFileActivity)){
+                            Toast.makeText(this@QueryFileActivity, resources.getString(R.string.toast_no_net), Toast.LENGTH_SHORT).show()
+                            return
+                        }
                         if (isFileExceed(file)){
                             track(MyTrack.pdf2word_over10m_show)
                             Toast.makeText(this@QueryFileActivity,
@@ -125,6 +134,10 @@ class QueryFileActivity : BaseActivity() {
                     }
                     pdf_img -> {
                         track(MyTrack.pdf2jpg_file_click)
+                        if (!Utils.isNetworkAvailable(this@QueryFileActivity)){
+                            Toast.makeText(this@QueryFileActivity, resources.getString(R.string.toast_no_net), Toast.LENGTH_SHORT).show()
+                            return
+                        }
                         if (isFileExceed(file)){
                             track(MyTrack.pdf2jpg_over10m_show)
                             Toast.makeText(this@QueryFileActivity,
@@ -139,7 +152,7 @@ class QueryFileActivity : BaseActivity() {
                         )
                     }
                     all -> {
-                        PreviewWordAndPDFActivity.newStart(this@QueryFileActivity, file.path)
+                        PreviewPDFActivity.newStart(this@QueryFileActivity, path = file.path)
                     }
                 }
             }

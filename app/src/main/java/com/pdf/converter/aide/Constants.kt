@@ -16,6 +16,7 @@ object Constants {
     const val QUERY_OPERATING = "query_operating"
     const val INIT_TBS = "init_tbs"
     const val INIT_LOADING = "init_loading"
+    const val PREVIEW_TYPE = "preview_type"
 
     const val REQUEST_CODE = 0x00000011
     const val PERMISSION_WRITE_EXTERNAL_REQUEST_CODE = 0x00000012
@@ -36,6 +37,8 @@ object Constants {
     const val fail = 0x00000027
     const val download = 0x00000028
     const val startDownload = 0x00000029
+    const val localPreview = 0x00000030
+    const val externalPreview = 0x00000031
 
 
 }

@@ -28,6 +28,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author : ydli
+ * @time : 2020/12/31 11:13
+ * @description :
+ */
 public class ImagePagerAdapter extends PagerAdapter {
 
     private Context mContext;

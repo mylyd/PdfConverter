@@ -13,46 +13,4 @@
         android:layout_gravity="center"
         android:src="@mipmap/bg_start"/>
 
-    <FrameLayout
-        android:id="@+id/network"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#88000000"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/dialog_fillet_style"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:textColor="@android:color/black"
-                android:textSize="15sp"
-                android:gravity="center"
-                android:text="@string/start_network"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#EEEEEE"/>
-
-            <TextView
-                android:id="@+id/network_ok"
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:textColor="#3F51B5"
-                android:text="@string/ok"
-                android:textSize="16sp"
-                android:gravity="center"/>
-
-        </LinearLayout>
-
-    </FrameLayout>
-
 </FrameLayout>

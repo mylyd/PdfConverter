@@ -8,6 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * @author : ydli
+ * @time : 2020/12/31 11:13
+ * @description :
+ */
 public class DateUtils {
 
     public static String getImageTime(Context context,long time) {

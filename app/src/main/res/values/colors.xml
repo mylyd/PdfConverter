@@ -9,7 +9,7 @@
     <color name="themes_color_blue">#3F51B5</color>
     <color name="themes_color_red">#FA5252</color>
     <color name="white_color_normal">@android:color/white</color>
-    <color name="white_color_press">#88FFFFFF</color>
+    <color name="white_color_press">#E7E7E7</color>
 
     <color name="path_info">#898B95</color>
     <color name="purple_500">#FF6200EE</color>

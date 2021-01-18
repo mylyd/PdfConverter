@@ -1,31 +1,27 @@
 package com.pdf.converter.fragment
 
 import android.os.Bundle
-import android.os.Environment
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.donkingliang.imageselector.toast.MToast
 import com.pdf.converter.R
 import com.pdf.converter.activity.PreviewImgActivity
-import com.pdf.converter.activity.PreviewWordAndPDFActivity
+import com.pdf.converter.activity.PreviewPDFActivity
 import com.pdf.converter.adapter.FileLibraryAdapter
-import com.pdf.converter.aide.Constants
 import com.pdf.converter.aide.Constants.all
 import com.pdf.converter.aide.Constants.pdf
 import com.pdf.converter.aide.Constants.word
 import com.pdf.converter.aide.Constants.zip
 import com.pdf.converter.aide.MyTrack
-import com.pdf.converter.dialog.TBSInitDialog
+import com.pdf.converter.dialog.DeleteDialog
+import com.pdf.converter.dialog.RenameDialog
+import com.pdf.converter.interfaces.OnDeleteClick
 import com.pdf.converter.interfaces.OnFileItem
-import com.pdf.converter.manager.SPManager
-import com.pdf.converter.manager.ShareManager
+import com.pdf.converter.interfaces.OnRenameClick
+import com.pdf.converter.manager.ShareManager.preViewOffice
 import com.pdf.converter.utils.PathUtils
-import com.pdf.converter.utils.Utils
 import com.pdf.converter.utils.ZipUtils
 import com.pdf.converter.view.SlideRecyclerView
 import java.io.File
@@ -48,7 +44,8 @@ class LibraryFragment : BaseFragment(), View.OnClickListener {
     private var noDocument: View? = null
     private var adapter: FileLibraryAdapter? = null
     private var initType = all
-    private var tbsInitDialog: TBSInitDialog? = null
+    private var deleteDialog: DeleteDialog? = null
+    private var renameDialog: RenameDialog? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -70,6 +67,8 @@ class LibraryFragment : BaseFragment(), View.OnClickListener {
         _zip?.setOnClickListener(this)
         _word?.setOnClickListener(this)
         _pdf?.setOnClickListener(this)
+        //开启侧滑功能
+        recyclerView?.isScrollView(true)
     }
 
     private fun initData() {
@@ -78,56 +77,98 @@ class LibraryFragment : BaseFragment(), View.OnClickListener {
         recyclerView?.layoutManager = LinearLayoutManager(context!!)
         adapter?.onFileItemOnClick(object : OnFileItem {
 
+            override fun itemMore(position: Int, file: File) {
+                track(MyTrack.library_more_click)
+                if (recyclerView!!.isMenu()) {
+                    recyclerView?.closeMenu()
+                } else {
+                    recyclerView?.openMenu()
+                }
+            }
+
             override fun itemRename(position: Int, file: File) {
-                Toast.makeText(context!!, "rename", Toast.LENGTH_SHORT).show()
+                track(MyTrack.library_rename_click)
+                if (renameDialog == null) {
+                    renameDialog = RenameDialog(activity!!, object : OnRenameClick {
+                        override fun ok(position: Int, filePath: File?, editText: String?) {
+                            if (filePath?.exists()!! && filePath.isFile) {
+                                val happening = PathUtils.fixFileName(
+                                    filePath,
+                                    "$editText.${PathUtils.getFileType(filePath.path)}"
+                                )
+                                if (happening != null) {
+                                    adapter?.refresh(position, happening)
+                                } else {
+                                    Toast.makeText(context!!, "File name already exists", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    })
+                    renameDialog?.show(position, file)
+                } else if (!renameDialog?.isShowing!!) {
+                    renameDialog?.show(position, file)
+                }
+                if (recyclerView?.isMenu()!!) {
+                    recyclerView?.closeMenu()
+                    return
+                }
             }
 
             override fun itemDelete(position: Int, file: File) {
-                Toast.makeText(context!!, "delete", Toast.LENGTH_SHORT).show()
+                track(MyTrack.library_delete_click)
+                if (deleteDialog == null) {
+                    deleteDialog = DeleteDialog(activity!!, object : OnDeleteClick {
+                        override fun ok(position: Int, filePath: File?) {
+                            if (filePath?.exists()!! && filePath.isFile) {
+                                //清除缓存 加上确保文件能删除，不然可能删不掉
+                                System.gc()
+                                val happening = filePath.delete()
+                                if (happening) {
+                                    adapter?.delete(position)
+                                }
+                            }
+                        }
+                    })
+                    deleteDialog?.show(position, file)
+                } else if (!deleteDialog?.isShowing!!) {
+                    deleteDialog?.show(position, file)
+                }
+                if (recyclerView?.isMenu()!!) {
+                    recyclerView?.closeMenu()
+                    return
+                }
             }
 
             override fun itemWord(file: File) {
                 track(MyTrack.library_file_click)
-                if (recyclerView?.isMenu()!!){
+                if (recyclerView?.isMenu()!!) {
                     recyclerView?.closeMenu()
                     return
                 }
-                if (!SPManager.init().getBoolean(Constants.INIT_TBS, false)) {
-                    initTBSDialog()
-                    return
-                }
-                isNetWork()
-                PreviewWordAndPDFActivity.newStart(context!!, file.path)
+                preViewOffice(context!!, file)
             }
 
             override fun itemPDF(file: File) {
                 track(MyTrack.library_file_click)
-                if (recyclerView?.isMenu()!!){
+                if (recyclerView?.isMenu()!!) {
                     recyclerView?.closeMenu()
                     return
                 }
-                if (!SPManager.init().getBoolean(Constants.INIT_TBS, false)) {
-                    initTBSDialog()
-                    return
-                }
-                isNetWork()
-                PreviewWordAndPDFActivity.newStart(context!!, file.path)
+
+                PreviewPDFActivity.newStart(context!!,path = file.path)
             }
 
             override fun itemZip(file: File) {
                 track(MyTrack.library_file_click)
-                if (recyclerView?.isMenu()!!){
+                if (recyclerView?.isMenu()!!) {
                     recyclerView?.closeMenu()
                     return
                 }
-                if (!SPManager.init().getBoolean(Constants.INIT_TBS, false)) {
-                    initTBSDialog()
-                    return
-                }
-                isNetWork()
+
                 val file = ZipUtils.unzip(file.path, PathUtils.unzipCache(activity!!).path)
                 if (file == null) {
-                    Toast.makeText(context, "null", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "File damaged，unable to open", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     val transferPath: String = if (file.isDirectory) {
                         PathUtils.transferFile(file, PathUtils.getImgFolder(activity!!).path)
@@ -140,27 +181,19 @@ class LibraryFragment : BaseFragment(), View.OnClickListener {
                     }
                     if (File(transferPath).isDirectory) {
                         PreviewImgActivity.newStart(context!!, transferPath)
-                    } else {
-                        PreviewWordAndPDFActivity.newStart(context!!, transferPath)
+                    } else if (File(transferPath).isFile){
+                        if (transferPath.endsWith(PathUtils.pdf)){
+                            PreviewPDFActivity.newStart(context!!, path = transferPath)
+                        } else if (transferPath.endsWith(PathUtils.word)) {
+                            preViewOffice(context!!, File(transferPath))
+                        }
+                    } else{
+                        Toast.makeText(context, "File damaged，unable to open", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         })
-    }
-
-    private fun isNetWork(){
-        if (!Utils.isNetworkAvailable(context!!)){
-            Toast.makeText(context!!, "Please keep your network available", Toast.LENGTH_SHORT).show()
-            return
-        }
-    }
-
-    private fun initTBSDialog() {
-        if (tbsInitDialog == null) {
-            tbsInitDialog = TBSInitDialog(activity!!)
-        } else if (!tbsInitDialog?.isShowing!!) {
-            tbsInitDialog?.show()
-        }
     }
 
     private fun switch(int: Int, window: Boolean? = false, view: View? = null) {

@@ -45,9 +45,15 @@ public class ImageSelector {
     public static final int RESULT_CODE = 0x00000012;
     //额外裁剪code值
     public static final int EXTRA_CROP = 0x000000191;
+    public static final int PRIMITIVE_CROP = 0x000000192; //使用原生裁剪方案
+    public static final int CUSTOMIZE_CROP = 0x000000193; //使用自定义裁剪方案
     public static final String EXTRA_CROP_VALUE = "extra_crop_value";
     public static final String EXTRA_CROP_RATIO = "extra_crop_ratio";
     public static final String EXTRA_CROP_POSITION = "extra_crop_position";
+    public static final String EXTRA_CROP_TYPE = "extra_crop_type";
+    public static final String ROM_HUA_WEI = "HUAWEI";
+    public static final int CROP_CODE = 0x000000194;
+
 
     /**
      * 预加载图片

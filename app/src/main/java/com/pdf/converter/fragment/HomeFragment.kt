@@ -59,10 +59,6 @@ class HomeFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        if (!Utils.isNetworkAvailable(context!!)){
-            Toast.makeText(context!!, "Please keep your network available", Toast.LENGTH_SHORT).show()
-            return
-        }
         when (view) {
             fromWord -> {
                 track(MyTrack.home_pdf_to_word_click)

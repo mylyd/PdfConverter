@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyCharacterMap;
@@ -35,6 +36,8 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class ImageUtil {
 
@@ -125,16 +128,49 @@ public class ImageUtil {
         return decodeSampledBitmapFromFile(context, pathName, 720, 1080);
     }
 
-    @SuppressLint("NewApi")
+    /**
+     * 优化图片因为部分机型导致旋转问题
+     *
+     * @param context
+     * @param pathName
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
     public static Bitmap decodeSampledBitmapFromFile(Context context, String pathName, int reqWidth, int reqHeight) {
+        return decodeSampledBitmapFromFile(context, pathName, reqWidth, reqHeight, false, false);
+    }
 
+    /**
+     * 旋转图片
+     *
+     * @param context
+     * @param bitmap
+     * @param direction 旋转方向 true 顺时针 false 逆时针
+     * @return
+     */
+    public static Bitmap decodeSampledBitmapFromFile(Context context, Bitmap bitmap, boolean direction) {
+        if (bitmap != null) {
+            String imagePath = getPathFormBitmap(context, bitmap);
+            if (StringUtils.isNotEmptyString(imagePath)) {
+                return decodeSampledBitmapFromFile(context, imagePath, 720, 1080, true, direction);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressLint("NewApi")
+    public static Bitmap decodeSampledBitmapFromFile(Context context, String pathName, int reqWidth,
+                                                     int reqHeight, boolean set, boolean direction) {
         int degree = 0;
 
         Uri uri = UriUtils.getImageContentUri(context, pathName);
         ParcelFileDescriptor parcelFileDescriptor = null;
         FileDescriptor fileDescriptor = null;
         try {
-
             parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri, "r");
             fileDescriptor = parcelFileDescriptor.getFileDescriptor();
 
@@ -190,13 +226,18 @@ public class ImageUtil {
 
             parcelFileDescriptor.close();
 
-            if (degree != 0) {
+            if (!set) {
+                if (degree != 0) {
+                    Bitmap newBitmap = rotateImageView(bitmap, degree);
+                    bitmap.recycle();
+                    return newBitmap;
+                }
+            } else {
+                degree = direction ? (degree + 90) : (degree - 90);
                 Bitmap newBitmap = rotateImageView(bitmap, degree);
                 bitmap.recycle();
-                bitmap = null;
                 return newBitmap;
             }
-
             return bitmap;
         } catch (OutOfMemoryError error) {
             Log.e("eee", "内存泄露！");
@@ -215,6 +256,21 @@ public class ImageUtil {
      */
     public static Bitmap getBitmapFromUri(Context context, Uri uri) {
         return getBitmapFromUri(context, uri, null);
+    }
+
+    /**
+     * 获取 path
+     */
+    public static String getPathFormBitmap(Context context, Bitmap bitmap) {
+        String imagePath = null;
+        if (bitmap != null) {
+            String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.getDefault())).toString();
+            String path = ImageUtil.getImageCacheDir(context);
+            imagePath = ImageUtil.saveImage(bitmap, path, name);
+            //bitmap.recycle();
+            //bitmap = null;
+        }
+        return imagePath;
     }
 
     /**

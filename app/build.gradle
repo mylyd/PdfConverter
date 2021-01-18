@@ -14,29 +14,27 @@ android {
         applicationId "com.best.reader.pdfconverter.joypdf"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 5
-        versionName "0.0.5"
+        versionCode 7
+        versionName "0.0.7"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // Specifies the ABI configurations of your native
         // libraries Gradle should build and package with your APK.
-        //ndk.abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
-        //支持x32情况下，google play发布会因为不兼容文件导致发布条件不符，无法发布，所以不能设置x32 so库的兼容模式
     }
 
     signingConfigs {
         release {
             keyAlias KEY_ALIAS
             keyPassword PASSWORD
-            storeFile file(STORE_FILE)
+            storeFile file(new File(STORE_FILE))
             storePassword PASSWORD
         }
 
         debug {
             keyAlias KEY_ALIAS
             keyPassword PASSWORD
-            storeFile file(STORE_FILE)
+            storeFile file(new File(STORE_FILE))
             storePassword PASSWORD
         }
     }
@@ -53,10 +51,12 @@ android {
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug{
+        debug {
+            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

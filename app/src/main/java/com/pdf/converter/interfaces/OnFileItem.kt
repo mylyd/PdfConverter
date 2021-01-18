@@ -19,4 +19,8 @@ interface OnFileItem {
     fun itemDelete(position: Int, file: File) = Unit
 
     fun itemRename(position: Int, file: File) = Unit
+
+    fun itemMore(position: Int, file: File) = Unit
+
+
 }
